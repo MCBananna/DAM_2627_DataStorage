@@ -47,7 +47,7 @@
 
     </LinearLayout>
 
-    <!-- Tarefa 2 - Shared Preferences -->
+    <!-- Tarefa 2 - Shared Preferences Multi files -->
 
     <LinearLayout style="@style/contentor_geral">
 
@@ -55,7 +55,7 @@
 
         <TextView
             style="@style/titulo_seccao"
-            android:text="@string/shared_preferences" />
+            android:text="@string/shared_preferencesMultiFich" />
 
         <LinearLayout style="@style/contentor_horizontal">
 
@@ -90,5 +90,52 @@
         </LinearLayout>
 
     </LinearLayout>
+
+
+
+    <!-- Tarefa 3 - Cache -->
+
+    <LinearLayout style="@style/contentor_geral">
+
+        <View style="@style/linha_separacao" />
+
+        <TextView
+            style="@style/titulo_seccao"
+            android:text="@string/Cache" />
+
+        <LinearLayout style="@style/contentor_horizontal">
+
+            <EditText
+                android:id="@+id/editText3a"
+                style="@style/editText"
+                android:hint="@string/escreveNome"
+                android:text=""
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/editText3b"
+                style="@style/editText"
+                android:hint="@string/escreveIdade"
+                android:text=""
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <LinearLayout style="@style/contentor_horizontal">
+
+            <Button
+                android:id="@+id/btWrite3"
+                style="@style/buttonWrite"
+                android:text="@string/btWrite" />
+
+            <Button
+                android:id="@+id/btRead3"
+                style="@style/buttonRead"
+                android:text="@string/btRead" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
 
 </LinearLayout>
