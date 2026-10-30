@@ -1,0 +1,146 @@
+package pt.uptomar.dam2026.datastorage
+
+import android.content.SharedPreferences
+import android.os.Bundle
+import android.view.View
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.snackbar.Snackbar
+import pt.uptomar.dam2026.datastorage.databinding.ActivityMainBinding
+import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var viewBinding: ActivityMainBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+
+        viewBinding = ActivityMainBinding.inflate(layoutInflater)
+
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(viewBinding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(viewBinding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        // Tarefa 1
+        viewBinding.btWrite1.setOnClickListener{
+            // Escreve dados na Shared Preferences
+            escreveSharedPreferences()
+            // Esconder o teclado
+            escondeTeclado(it)
+        }
+
+        viewBinding.btRead1.setOnClickListener{
+            lerSharedPreferences()
+        }
+
+        // Tarefa 2
+        viewBinding.btWrite2.setOnClickListener{
+            // Escreve dados na Shared Preferences
+            escreveSharedPreferencesMultiFich()
+            // Esconder o teclado
+            escondeTeclado(it)
+        }
+
+        viewBinding.btRead2.setOnClickListener{
+            // Ler os dados guardados
+            lerSharedPreferencesMultiFich()
+        }
+
+    }
+
+    /**
+     * Escrever na SharedPreferences com multiplos ficheiros
+     */
+    private fun escreveSharedPreferencesMultiFich() {
+        val sharedPreferencesNomes = getSharedPreferences("nomes.dat", MODE_PRIVATE)
+        val sharedPreferencesIdades = getSharedPreferences("idades.dat", MODE_PRIVATE)
+
+        val editorNomes: SharedPreferences.Editor = sharedPreferencesNomes.edit()
+        val editorIdades: SharedPreferences.Editor = sharedPreferencesIdades.edit()
+
+        // colocar o conteúdo que o utilizador escreveu nas Shared Preferences
+        // Os dados são sempre escritos no formato: 'Variável'+'valor'
+        // usa-se o método putXXXXX, onde XXXXX significa String, Int, Double, etc.
+        editorNomes.putString("NOME", viewBinding.editText2a.text.toString())
+        editorIdades.putInt(
+            "IDADE",
+            viewBinding.editText2b.text.toString().toIntOrNull() ?: 0
+        ) // se a Idade=NULL, coloca 0
+        // guardar as alterações
+        editorNomes.commit()  // eventualmente, <=>   editorNomes.apply()
+        editorIdades.commit()
+
+        // neste caso, vamos mostrar uma mensagem de 'conforto' ao utilizador
+        Toast.makeText(this, getString(R.string.dados_guardados), Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+    * Lê os dados de diversos ficheiros SharedPreferences
+    */
+    private fun lerSharedPreferencesMultiFich() {
+        val sharedPreferencesNome = getSharedPreferences("nomes.dat", MODE_PRIVATE)
+        val sharedPreferencesIdade = getSharedPreferences("idades.dat", MODE_PRIVATE)
+        // ler o conteúdo da Shared Preferences. Se não for possível a leitura, devolve um texto alternativo
+        // estou a usar o método getString() porque guardei 'texto'. Outros tipos de dados,
+        // implicam outros métodos
+        val nome = sharedPreferencesNome.getString("NOME", getString(R.string.txt_vazio))
+        val idade = sharedPreferencesIdade.getInt("IDADE", 0)
+
+        // usar os dados lidos
+        Snackbar.make(
+            viewBinding.root,
+            "Você chama-se ${nome.toString().uppercase()} e tem $idade anos!",
+            Snackbar.LENGTH_SHORT
+        ).show()
+    }
+
+    /**
+     * Lê os dados escritos pelo utilizador na interface
+     */
+    private fun lerSharedPreferences() {
+        val sharedPreferences = getPreferences(MODE_PRIVATE)
+        // ler o conteúdo da Shared Preferences. Se não for possível a leitura, devolve um texto alternativo
+        // estou a usar o método getString() porque guardei 'texto'. Outros tipos de dados,
+        // implicam outros métodos
+        val texto = sharedPreferences.getString("SPreferenceSimples", getString(R.string.txt_vazio))
+
+        // usar os dados lidos
+        //Snackbar.make(viewBinding.root, "Introduziu: $texto", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(viewBinding.root, getString(R.string.texto,texto), Snackbar.LENGTH_SHORT).show()
+    }
+
+    /**
+     * Escreve na SharedPreferences os dados escritos pelo utilizador na interface
+     */
+    private fun escreveSharedPreferences() {
+        val sharedPreferences = getPreferences(MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+
+        // colocar o conteúdo que o utilizador escreveu nas Shared Preferences
+        // Os dados são sempre escritos no formato: 'Variável'+'valor'
+        // usa-se o método putXXXXX, onde XXXXX significa String, Int, Double, etc.
+        editor.putString("SPreferenceSimples", viewBinding.editText1.text.toString())
+        // guardar as alterações
+        editor.commit()  // eventualmente, <=>   editor.apply()
+
+        // neste caso, vamos mostrar uma mensagem de 'conforto' ao utilizador
+        Toast.makeText(this, getString(R.string.dados_guardados), Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     * Esconde o teclado quando já não é necessário
+     */
+    private fun escondeTeclado(view: View) {
+        // hide the keyboard
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+}
